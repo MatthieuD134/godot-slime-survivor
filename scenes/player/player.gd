@@ -2,6 +2,7 @@ extends CharacterBody2D
 
 signal damage_taken(damage: int)
 signal healing_received(amount: int)
+signal player_died()
 
 @onready var base_attack_scene = load("res://scenes/player/spells/base_attack.tscn")
 
@@ -37,6 +38,8 @@ func kill():
 	animation_player.play("player_death")
 	var tween = create_tween()
 	tween.tween_property(self, "modulate:a", 0, 0.5)
+	player_died.emit()
+	
 
 # -------------------------
 # HANDLING EXTERNAL SIGNALS

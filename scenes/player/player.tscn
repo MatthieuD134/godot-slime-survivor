@@ -110,6 +110,7 @@ autostart = true
 
 [node name="PlayerSprite" type="Sprite2D" parent="."]
 unique_name_in_owner = true
+visible = false
 texture_filter = 1
 position = Vector2(0, -4)
 texture = ExtResource("1_8u6gs")
@@ -139,8 +140,8 @@ shape = SubResource("CircleShape2D_533qa")
 
 [node name="HealthComponent" parent="." node_paths=PackedStringArray("health_bar") instance=ExtResource("3_1ivij")]
 unique_name_in_owner = true
-_max_health = 20
-_health = 20
+_max_health = 50
+_health = 50
 health_bar = NodePath("../HealthBar")
 
 [node name="HealthBar" parent="." instance=ExtResource("4_h5w1w")]

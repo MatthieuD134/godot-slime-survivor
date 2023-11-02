@@ -1,4 +1,4 @@
-[gd_scene load_steps=22 format=3 uid="uid://cu7rijr8te0f1"]
+[gd_scene load_steps=24 format=3 uid="uid://cu7rijr8te0f1"]
 
 [ext_resource type="PackedScene" uid="uid://dkgnrmk13y8hd" path="res://scenes/player/player.tscn" id="1_cjhsg"]
 [ext_resource type="Texture2D" uid="uid://c8oevaddjrmi1" path="res://graphics/environment/TX Tileset Grass.png" id="1_m6e15"]
@@ -11,6 +11,8 @@
 [ext_resource type="Texture2D" uid="uid://dxmp4c15a1vwm" path="res://graphics/environment/TX Props.png" id="7_tqjng"]
 [ext_resource type="Texture2D" uid="uid://dnkyf8kgpo7co" path="res://graphics/environment/TX Player.png" id="8_3xg48"]
 [ext_resource type="Texture2D" uid="uid://b3e4jwwpdmr25" path="res://graphics/environment/TX Plant.png" id="9_x1458"]
+[ext_resource type="PackedScene" uid="uid://dh6i6aayatpbv" path="res://scenes/user-interface/pause_menu.tscn" id="12_larpt"]
+[ext_resource type="PackedScene" uid="uid://comdhnygu7ksb" path="res://scenes/user-interface/game_over_menu.tscn" id="12_mf8jy"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_pjccn"]
 texture = ExtResource("1_m6e15")
@@ -2022,4 +2024,16 @@ autostart = true
 [node name="PlayerSpells" type="Node2D" parent="."]
 z_index = 1
 
+[node name="CanvasLayer" type="CanvasLayer" parent="."]
+
+[node name="PauseMenu" parent="CanvasLayer" instance=ExtResource("12_larpt")]
+unique_name_in_owner = true
+
+[node name="CanvasLayer2" type="CanvasLayer" parent="."]
+
+[node name="GameOverMenu" parent="CanvasLayer2" instance=ExtResource("12_mf8jy")]
+unique_name_in_owner = true
+
+[connection signal="player_died" from="Player" to="." method="_on_player_player_died"]
 [connection signal="timeout" from="Enemies/EnemySpawnTimer" to="." method="_on_enemy_spawn_timer_timeout"]
+[connection signal="unpause" from="CanvasLayer/PauseMenu" to="." method="_on_pause_menu_unpause"]
