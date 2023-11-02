@@ -1,0 +1,182 @@
+[gd_scene load_steps=12 format=3 uid="uid://nb8icf8158na"]
+
+[ext_resource type="Texture2D" uid="uid://dnkyf8kgpo7co" path="res://graphics/environment/TX Player.png" id="1_3c56u"]
+[ext_resource type="Script" path="res://scenes/enemies/enemy.gd" id="1_7oxxm"]
+[ext_resource type="PackedScene" uid="uid://msls2m5cgnmm" path="res://scenes/components/health_component.tscn" id="3_b7r8o"]
+[ext_resource type="Script" path="res://scenes/components/HitBox.gd" id="3_lg4q5"]
+[ext_resource type="PackedScene" uid="uid://b3g1m1qhwnm3l" path="res://scenes/components/hit_markers.tscn" id="4_kw7u6"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_cgvdy"]
+size = Vector2(19, 17)
+
+[sub_resource type="Animation" id="Animation_vkxux"]
+resource_name = "enemy_damage"
+
+[sub_resource type="Animation" id="Animation_6nya7"]
+resource_name = "enemy_death"
+tracks/0/type = "method"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath(".")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(1),
+"transitions": PackedFloat32Array(1),
+"values": [{
+"args": [],
+"method": &"queue_free"
+}]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("CPUParticles2D:emitting")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [true]
+}
+tracks/2/type = "value"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath("Sprite2D:visible")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [false]
+}
+tracks/3/type = "value"
+tracks/3/imported = false
+tracks/3/enabled = true
+tracks/3/path = NodePath("Shadow:visible")
+tracks/3/interp = 1
+tracks/3/loop_wrap = true
+tracks/3/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [false]
+}
+tracks/4/type = "value"
+tracks/4/imported = false
+tracks/4/enabled = true
+tracks/4/path = NodePath("CollisionShape2D:disabled")
+tracks/4/interp = 1
+tracks/4/loop_wrap = true
+tracks/4/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [true]
+}
+tracks/5/type = "value"
+tracks/5/imported = false
+tracks/5/enabled = true
+tracks/5/path = NodePath("HitBox/CollisionShape2D:disabled")
+tracks/5/interp = 1
+tracks/5/loop_wrap = true
+tracks/5/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [true]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_3bw6t"]
+_data = {
+"enemy_damage": SubResource("Animation_vkxux"),
+"enemy_death": SubResource("Animation_6nya7")
+}
+
+[sub_resource type="Gradient" id="Gradient_u7cpu"]
+offsets = PackedFloat32Array(0.0017762, 1)
+colors = PackedColorArray(0.294118, 0.172549, 0.109804, 1, 0.686275, 0.65098, 0.611765, 1)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_sh0pl"]
+size = Vector2(19, 42)
+
+[node name="Enemy" type="CharacterBody2D"]
+collision_layer = 4
+collision_mask = 192
+script = ExtResource("1_7oxxm")
+
+[node name="Shadow" type="Sprite2D" parent="."]
+unique_name_in_owner = true
+position = Vector2(4, -24)
+texture = ExtResource("1_3c56u")
+hframes = 4
+vframes = 2
+frame = 3
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+unique_name_in_owner = true
+texture_filter = 1
+position = Vector2(0, -22)
+texture = ExtResource("1_3c56u")
+hframes = 4
+vframes = 2
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+position = Vector2(0.5, -5.5)
+shape = SubResource("RectangleShape2D_cgvdy")
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="."]
+unique_name_in_owner = true
+libraries = {
+"": SubResource("AnimationLibrary_3bw6t")
+}
+
+[node name="CPUParticles2D" type="CPUParticles2D" parent="."]
+position = Vector2(0, -22)
+emitting = false
+amount = 50
+lifetime = 0.25
+one_shot = true
+explosiveness = 1.0
+randomness = 1.0
+emission_shape = 1
+emission_sphere_radius = 5.0
+direction = Vector2(1, 2.08165e-12)
+spread = 180.0
+gravity = Vector2(2.08165e-12, 2.08165e-12)
+initial_velocity_min = 160.0
+initial_velocity_max = 320.0
+angle_min = -180.0
+angle_max = 180.0
+color = Color(0.643137, 0.607843, 0.556863, 1)
+color_initial_ramp = SubResource("Gradient_u7cpu")
+
+[node name="HitBox" type="Area2D" parent="." node_paths=PackedStringArray("body_reference")]
+unique_name_in_owner = true
+position = Vector2(0, -22)
+collision_layer = 8
+collision_mask = 18
+script = ExtResource("3_lg4q5")
+body_reference = NodePath("..")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="HitBox"]
+position = Vector2(0.5, 4)
+shape = SubResource("RectangleShape2D_sh0pl")
+
+[node name="HealthComponent" parent="." instance=ExtResource("3_b7r8o")]
+unique_name_in_owner = true
+_max_health = 5
+_health = 5
+
+[node name="HitMarkers" parent="." instance=ExtResource("4_kw7u6")]
+position = Vector2(0, -20)
+height = 5.0
+spread = 5.0
+
+[connection signal="damage_taken" from="." to="HealthComponent" method="_on_enemy_damage_taken"]
+[connection signal="healing_received" from="." to="HealthComponent" method="_on_enemy_healing_received"]
+[connection signal="damage_taken" from="HealthComponent" to="." method="_on_health_component_damage_taken"]
+[connection signal="damage_taken" from="HealthComponent" to="HitMarkers" method="_on_health_component_damage_taken"]
+[connection signal="died" from="HealthComponent" to="." method="_on_health_component_died"]

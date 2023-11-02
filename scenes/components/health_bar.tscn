@@ -1,0 +1,15 @@
+[gd_scene load_steps=3 format=3 uid="uid://dylyrxysq2tn1"]
+
+[ext_resource type="Texture2D" uid="uid://cx0skpn8usgph" path="res://graphics/player/health-bar-background-001.png" id="1_1jxwo"]
+[ext_resource type="Texture2D" uid="uid://bk26d2c8sreft" path="res://graphics/player/health-bar-foreground-001.png" id="2_hcwu6"]
+
+[node name="HealthBar" type="TextureProgressBar"]
+texture_filter = 1
+offset_left = -15.0
+offset_top = -16.0
+offset_right = 17.0
+offset_bottom = 16.0
+value = 75.0
+rounded = true
+texture_under = ExtResource("1_1jxwo")
+texture_progress = ExtResource("2_hcwu6")

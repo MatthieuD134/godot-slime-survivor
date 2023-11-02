@@ -1,0 +1,158 @@
+[gd_scene load_steps=12 format=3 uid="uid://dkgnrmk13y8hd"]
+
+[ext_resource type="Texture2D" uid="uid://cd8uj6wo3l5lx" path="res://graphics/player/Slime-001.png" id="1_8u6gs"]
+[ext_resource type="Script" path="res://scenes/player/player.gd" id="1_kuby6"]
+[ext_resource type="PackedScene" uid="uid://msls2m5cgnmm" path="res://scenes/components/health_component.tscn" id="3_1ivij"]
+[ext_resource type="Script" path="res://scenes/components/HitBox.gd" id="3_ywkxv"]
+[ext_resource type="PackedScene" uid="uid://dylyrxysq2tn1" path="res://scenes/components/health_bar.tscn" id="4_h5w1w"]
+
+[sub_resource type="Animation" id="Animation_2dhr1"]
+resource_name = "player_damaged"
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("PlayerSprite:visible")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.1, 0.2, 0.3, 0.4, 0.5),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1),
+"update": 1,
+"values": [false, true, false, true, false, true]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("AnimationPlayer:current_animation")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0.5),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [&"player_idle"]
+}
+tracks/2/type = "method"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath("HealthComponent")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(0, 0.5),
+"transitions": PackedFloat32Array(1, 1),
+"values": [{
+"args": [true],
+"method": &"set_is_invulnerable"
+}, {
+"args": [false],
+"method": &"set_is_invulnerable"
+}]
+}
+
+[sub_resource type="Animation" id="Animation_n3f6j"]
+resource_name = "player_death"
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("PlayerSprite:visible")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.1, 0.2, 0.3, 0.4),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1),
+"update": 1,
+"values": [false, true, false, true, false]
+}
+
+[sub_resource type="Animation" id="Animation_gtgh2"]
+resource_name = "player_idle"
+loop_mode = 1
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("PlayerSprite:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1, 1, 1, 1, 1),
+"update": 1,
+"values": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_1krbm"]
+_data = {
+"player_damaged": SubResource("Animation_2dhr1"),
+"player_death": SubResource("Animation_n3f6j"),
+"player_idle": SubResource("Animation_gtgh2")
+}
+
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_x0sf2"]
+radius = 4.0
+height = 16.0
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_533qa"]
+radius = 8.0
+
+[node name="Player" type="CharacterBody2D"]
+collision_mask = 192
+script = ExtResource("1_kuby6")
+
+[node name="Spells" type="Node2D" parent="."]
+unique_name_in_owner = true
+
+[node name="BaseSpell" type="Node2D" parent="Spells"]
+unique_name_in_owner = true
+
+[node name="BaseSpellTimer" type="Timer" parent="Spells/BaseSpell"]
+autostart = true
+
+[node name="PlayerSprite" type="Sprite2D" parent="."]
+unique_name_in_owner = true
+texture_filter = 1
+position = Vector2(0, -4)
+texture = ExtResource("1_8u6gs")
+hframes = 10
+frame = 5
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="."]
+unique_name_in_owner = true
+autoplay = "player_idle"
+libraries = {
+"": SubResource("AnimationLibrary_1krbm")
+}
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+rotation = 1.5708
+shape = SubResource("CapsuleShape2D_x0sf2")
+
+[node name="PlayerHitBox" type="Area2D" parent="." node_paths=PackedStringArray("body_reference")]
+position = Vector2(0, -4)
+collision_layer = 2
+collision_mask = 40
+script = ExtResource("3_ywkxv")
+body_reference = NodePath("..")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="PlayerHitBox"]
+shape = SubResource("CircleShape2D_533qa")
+
+[node name="HealthComponent" parent="." node_paths=PackedStringArray("health_bar") instance=ExtResource("3_1ivij")]
+unique_name_in_owner = true
+_max_health = 20
+_health = 20
+health_bar = NodePath("../HealthBar")
+
+[node name="HealthBar" parent="." instance=ExtResource("4_h5w1w")]
+offset_left = -16.0
+offset_top = -8.0
+offset_right = 16.0
+offset_bottom = 24.0
+
+[connection signal="damage_taken" from="." to="HealthComponent" method="_on_player_damage_taken"]
+[connection signal="healing_received" from="." to="HealthComponent" method="_on_player_healing_received"]
+[connection signal="timeout" from="Spells/BaseSpell/BaseSpellTimer" to="." method="_on_base_spell_timer_timeout"]
+[connection signal="damage_taken" from="HealthComponent" to="." method="_on_health_component_damage_taken"]
+[connection signal="died" from="HealthComponent" to="." method="_on_health_component_died"]
+[connection signal="health_value_changed" from="HealthComponent" to="HealthBar" method="_on_health_component_health_value_changed"]
+[connection signal="max_health_value_changed" from="HealthComponent" to="HealthBar" method="_on_health_component_max_health_value_changed"]
